@@ -6,29 +6,29 @@ from tkinter import Canvas
 from PIL import Image, ImageTk
 
 def detect_parking_spaces(image_path, lower_hsv, upper_hsv):
-    # Dosya yolunun mevcut olup olmadığını kontrol edin
+    # Dosya yolunun mevcut olup olmadığının kontrolü
     if not os.path.exists(image_path):
         print(f"Error: File not found at {image_path}")
         return [], None
     
-    # Görüntüyü yükleyin
+    # Görüntü yükleme
     image = cv2.imread(image_path)
     
-    # Görüntünün başarıyla yüklenip yüklenmediğini kontrol edin
+    # Görüntünün başarıyla yüklenip yüklenmediğini kontrol etme
     if image is None:
         print(f"Error: Unable to load image at {image_path}")
         return [], None
     
-    # Görüntüyü yeniden boyutlandırın (isteğe bağlı)
+    # Görüntünün yeniden boyutlandırılması
     image = cv2.resize(image, (800, 600))
     
-    # Görüntüyü HSV renk uzayına dönüştürün
+    # Görüntüyü HSV renk uzayına dönüştürülmesi
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     
-    # Belirtilen renk aralığında maske oluşturun
+    # Belirtilen renk aralığında maske oluşturulması
     mask = cv2.inRange(hsv_image, lower_hsv, upper_hsv)
     
-    # Kenar tespiti ile konturları bulun
+    # Kenar tespiti ile konturların bulunması
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     parking_spaces = []
@@ -38,20 +38,20 @@ def detect_parking_spaces(image_path, lower_hsv, upper_hsv):
     
     return parking_spaces, image
 
-# Mor renk aralığını belirleyelim
+# Mor renk aralığı
 lower_purple = np.array([130, 50, 50])
 upper_purple = np.array([160, 255, 255])
 
-# Park yerlerini kontrol edelim
+# Park yerlerinin kontrolü
 image_path = 'otopark.jpg'
 parking_spaces, image = detect_parking_spaces(image_path, lower_purple, upper_purple)
 
 if image is not None:
     print(parking_spaces)
 
-    # Tespit edilen park yerlerini görselleştirelim
+    # Tespit edilen park yerlerinin belirtilmesi
     for (x, y, w, h) in parking_spaces:
-        cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 255), 2)  # Mor renk ile çiz
+        cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 255), 2)  # Boş park yerlerinin mor renk ile çiz
     cv2.imshow('Otopark Sistemi', image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -70,13 +70,13 @@ class ParkingSystemGUI:
         self.canvas = Canvas(master, width=800, height=600)
         self.canvas.pack()
         
-        # Görüntüyü yükleyip yeniden boyutlandıralım
+        # Görüntüyü yükleyip yeniden boyutlandırma
         self.image = Image.open(image_path)
         self.image = self.image.resize((800, 600), Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.image)
         self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
         
-        # Park yerlerini çizelim
+        # Park yerlerinin çizilmesi
         self.rectangles = []
         for (x, y, w, h) in self.parking_spaces:
             rect = self.canvas.create_rectangle(x, y, x + w, y + h, outline='purple', width=2)
@@ -98,7 +98,7 @@ class ParkingSystemGUI:
         
     def update_canvas(self):
         for idx, (x, y, w, h) in enumerate(self.parking_spaces):
-            color = 'purple' if self.parking_status[idx] == 'boş' else 'blue'
+            color = 'purple' if self.parking_status[idx] == 'boş' else 'blue'  #araç yerleştirilen park yerlerinin dolu olduğunu göstermek için mavi renk ile belirtelim
             self.canvas.itemconfig(self.rectangles[idx], outline=color)
         
     def update_status(self):
